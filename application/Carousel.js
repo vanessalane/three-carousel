@@ -50,11 +50,11 @@
 
     // find shortest rotation angle (modulo)
     angle = (item.carouselAngle - Math.PI / 2) % (2 * Math.PI);
-    b = this.rotation.y % (2 * Math.PI);
+    b = this.rotation.x % (2 * Math.PI);
 
     if (b > 0) b = -2 * Math.PI + b;
 
-    this.rotation.y = b;
+    this.rotation.x = b;
 
     if (angle < b) angle += 2 * Math.PI;
 
@@ -62,9 +62,13 @@
       ang = b + -(2 * Math.PI - (angle - b));
     else ang = b + (angle - b);
 
+    if (ang > 180) {
+      this.opacity = 0;
+    }
+
     // tween it
     new TWEEN.Tween(this.rotation)
-      .to({ y: ang }, 800)
+      .to({ x: ang }, 800)
       .easing(TWEEN.Easing.Exponential.EaseInOut)
       .onComplete(function () {
         if (callback) callback.call(thiss);
@@ -82,13 +86,8 @@
       text,
       textcontainer,
       texture,
-      plane,
       canvas,
-      cntx,
-      gradient,
-      texture2,
       material,
-      reflectionPlane,
       w = scope.width,
       h = scope.height,
       r = scope.radius,
@@ -98,11 +97,10 @@
     // text caption
     if (img.caption) {
       size = 0.4 * (w / img.caption.length);
-      height = 2;
       text3d = new THREE.TextGeometry(img.caption, {
         size: size,
-        height: height,
-        curveSegments: 2,
+        height: 0,
+        curveSegments: 12,
         font: "helvetiker",
       });
       textMaterial = new THREE.MeshBasicMaterial({
@@ -124,24 +122,23 @@
     });
     textPlane = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 3, 3), material);
     aa = i * anglePer;
-    textPlane.rotation.y = -aa - Math.PI / 2;
+    textPlane.rotation.x = aa - Math.PI / 2;
     textPlane.position = new THREE.Vector3(
-      r * Math.cos(aa),
       0,
+      r * Math.cos(aa),
       r * Math.sin(aa)
     );
     textPlane.doubleSided = true;
     textPlane.carouselAngle = aa; //plane.rotation.y;
-    textPlane.scale.x = -1;
+    textPlane.scale.y = -1;
 
     if (img.caption) {
       // position text caption, relative to image plane
       textcontainer.position.x = textPlane.position.x;
-      textcontainer.position.y = textPlane.position.y;
+      textcontainer.position.y = textPlane.position.y; // this should be vertical position
       textcontainer.position.z = textPlane.position.z;
-      textcontainer.rotation.y = textPlane.rotation.y;
+      textcontainer.rotation.x = textPlane.rotation.x;
       text.scale.x = textPlane.scale.x;
-      text.position.x = w * 0.5;
     }
 
     canvas = document.createElement("canvas");
