@@ -25,8 +25,6 @@
     camera,
     scene,
     renderer,
-    projector,
-    updatecamera = false,
     carouselupdate = true,
     carousel,
     targetRotationY = 0,
@@ -34,7 +32,6 @@
     targetRotationX = 0,
     targetRotationOnMouseDownX = 0,
     mouse = { x: 0, y: 0 },
-    prevmouse = { x: 0, y: 0 },
     mouseX = 0,
     mouseXOnMouseDown = 0,
     mouseY = 0,
@@ -97,7 +94,7 @@
 
   // main Application Object
   var self = {
-    init: function (images) {
+    init: function (items) {
       var w, h;
 
       container = document.getElementById("container");
@@ -114,9 +111,8 @@
       projector = new THREE.Projector();
       renderer = new THREE.CanvasRenderer();
       renderer.setSize(w, h);
-
       // Carousel
-      carousel = new Carousel(200, images, 150, 100);
+      carousel = new Carousel(200, items, 100, 100);
       scene.add(carousel);
 
       container.appendChild(renderer.domElement);

@@ -13,7 +13,7 @@
   var THREE = window.THREE,
     TWEEN = window.TWEEN;
 
-  var self = function (radius, imagesList, width, height) {
+  var self = function (radius, items, width, height) {
     // call super
     THREE.Object3D.call(this);
 
@@ -25,11 +25,10 @@
     this.reflectionOpacity = 0;
     this.reflectionHeightPer = 0.4;
 
-    this.images = imagesList;
-    this.howMany = 0;
+    this.items = items;
 
-    var l = this.images.length;
-    this.anglePer = l > 0 ? (2 * Math.PI) / l : 0;
+    var l = this.items.length;
+    this.anglePer = l > 0 ? Math.PI / l : 0;
 
     for (var i = 0; i < l; i++) {
       buildCarousel(scope, i);
@@ -78,9 +77,8 @@
 
   // <private> build the carousel when everything is loaded
   function buildCarousel(scope, i) {
-    var img = scope.images[i];
+    var item = scope.items[i];
     var size,
-      height,
       text3d,
       textMaterial,
       text,
@@ -95,12 +93,12 @@
       aa;
 
     // text caption
-    if (img.caption) {
-      size = 0.4 * (w / img.caption.length);
-      text3d = new THREE.TextGeometry(img.caption, {
-        size: size,
-        height: 0,
-        curveSegments: 12,
+    if (item.label) {
+      size = 20;
+      text3d = new THREE.TextGeometry(item.label, {
+        size,
+        height: 0.1,
+        curveSegments: 4,
         font: "helvetiker",
       });
       textMaterial = new THREE.MeshBasicMaterial({
@@ -128,11 +126,11 @@
       r * Math.cos(aa),
       r * Math.sin(aa)
     );
-    textPlane.doubleSided = true;
+    textPlane.doubleSided = false;
     textPlane.carouselAngle = aa; //plane.rotation.y;
     textPlane.scale.y = -1;
 
-    if (img.caption) {
+    if (item.label) {
       // position text caption, relative to image plane
       textcontainer.position.x = textPlane.position.x;
       textcontainer.position.y = textPlane.position.y; // this should be vertical position
@@ -147,7 +145,7 @@
 
     // add to the carousel
     scope.add(textPlane);
-    if (scope.images[i].caption) {
+    if (scope.items[i].label) {
       scope.add(textcontainer);
     }
   }
