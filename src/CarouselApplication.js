@@ -85,8 +85,14 @@
   }
 
   function render() {
-    if (carouselupdate)
-      carousel.rotation.x += (targetRotationX - carousel.rotation.x) * 0.05;
+    if (!carouselupdate) {
+      return;
+    }
+    const newRotationX = (targetRotationX - carousel.rotation.x) * 0.05;
+    if (Math.abs(newRotationX) > 1.5) {
+      return;
+    }
+    carousel.rotation.x = newRotationX;
     renderer.render(scene, camera);
     updatecamera = false;
     TWEEN.update();
@@ -105,18 +111,22 @@
       container.style.marginTop = 0.5 * (window.innerHeight - h) + "px";
 
       scene = new THREE.Scene();
+
+      // camera
       camera = new THREE.PerspectiveCamera(70, w / h, 1, 1000);
       camera.position.z = 500;
       scene.add(camera);
-      projector = new THREE.Projector();
+
+      // renderer
       renderer = new THREE.CanvasRenderer();
       renderer.setSize(w, h);
-      // Carousel
+
+      // add carousel to scene
       carousel = new Carousel(200, items, 100, 100);
       scene.add(carousel);
 
+      // add scene to container
       container.appendChild(renderer.domElement);
-
       container.addEventListener("mousedown", onDocumentMouseDown, false);
 
       animate();
